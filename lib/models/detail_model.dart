@@ -212,9 +212,15 @@ class DetailResult {
       subtitleLang1: json['subtitle_lang_1'],
       subtitleLang2: json['subtitle_lang_2'],
       subtitleLang3: json['subtitle_lang_3'],
-      seasons: (json['season'] ?? json['session']) != null
-          ? ((json['season'] ?? json['session']) as List).map((i) => SeasonItem.fromJson(i)).toList()
-          : null,
+      seasons: () {
+        final raw = json['season'] ?? json['session'] ?? json['seasons'];
+        if (raw is List) {
+          return raw.map((i) => SeasonItem.fromJson(i is Map<String, dynamic> ? i : {})).toList();
+        } else if (raw is Map<String, dynamic>) {
+          return [SeasonItem.fromJson(raw)];
+        }
+        return <SeasonItem>[];
+      }(),
       episodes: (json['episode'] ?? json['episodes']) != null
           ? ((json['episode'] ?? json['episodes']) as List).map((i) => EpisodeItem.fromJson(i)).toList()
           : null,

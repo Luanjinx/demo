@@ -52,12 +52,15 @@ class TVAuthProvider extends ChangeNotifier {
       Constant.userEmail = prefs.getString(Constant.keyUserEmail);
       Constant.userImage = prefs.getString(Constant.keyUserImage);
       Constant.isUserLogin = true;
+      Constant.userIsKid = prefs.getBool(Constant.keyUserIsKid) ?? false;
       _currentUser = TVUserData(
         id: int.tryParse(storedUserId),
         name: Constant.userName,
         email: Constant.userEmail,
         image: Constant.userImage,
       );
+    } else {
+      Constant.userIsKid = false;
     }
     notifyListeners();
   }
@@ -124,12 +127,20 @@ class TVAuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> switchProfile({required bool isKid}) async {
+    Constant.userIsKid = isKid;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(Constant.keyUserIsKid, isKid);
+    notifyListeners();
+  }
+
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(Constant.keyUserId);
     await prefs.remove(Constant.keyUserName);
     await prefs.remove(Constant.keyUserEmail);
     await prefs.remove(Constant.keyUserImage);
+    await prefs.remove(Constant.keyUserIsKid);
 
     _isLoggedIn = false;
     _currentUser = null;
@@ -138,6 +149,7 @@ class TVAuthProvider extends ChangeNotifier {
     Constant.userEmail = null;
     Constant.userImage = null;
     Constant.isUserLogin = false;
+    Constant.userIsKid = false;
 
     stopPolling();
     notifyListeners();

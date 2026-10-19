@@ -14,6 +14,7 @@ class Constant {
   static String? userEmail;
   static String? userImage;
   static bool isUserLogin = false;
+  static bool userIsKid = false;
 
   // TV Video Types
   static const int videoTypeMovie = 1;
@@ -29,4 +30,5 @@ class Constant {
   static const String keyUserEmail = "tv_user_email";
   static const String keyUserImage = "tv_user_image";
   static const String keyDeviceId = "tv_device_id";
+  static const String keyUserIsKid = "tv_user_is_kid";
 }

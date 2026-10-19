@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../providers/tv_auth_provider.dart';
 import '../providers/tv_home_provider.dart';
 import '../utils/color.dart';
+import '../utils/constant.dart';
 import 'tv_focusable.dart';
 
 class TVSidebar extends StatefulWidget {
@@ -103,22 +104,21 @@ class _TVSidebarState extends State<TVSidebar> {
                       ? MainAxisAlignment.start
                       : MainAxisAlignment.center,
                   children: [
-                    Container(
-                      width: 38,
-                      height: 38,
-                      decoration: BoxDecoration(
-                        color: TVColors.primary,
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: TVColors.primary.withValues(alpha: 0.40),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
+                    SizedBox(
+                      width: 36,
+                      height: 36,
+                      child: Image.asset(
+                        'assets/images/appicon.png',
+                        fit: BoxFit.contain,
+                        errorBuilder: (_, __, ___) => Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: TVColors.primary,
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                        ],
-                      ),
-                      child: const Center(
-                        child: Icon(Icons.play_arrow_rounded, color: Colors.white, size: 24),
+                          child: const Icon(Icons.play_arrow_rounded, color: Colors.black, size: 22),
+                        ),
                       ),
                     ),
                     if (_isExpanded) ...[
@@ -128,11 +128,11 @@ class _TVSidebarState extends State<TVSidebar> {
                           "NEXSTREAM",
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.outfit(
+                          style: GoogleFonts.inter(
                             fontSize: 16,
                             fontWeight: FontWeight.w900,
-                            color: Colors.white,
-                            letterSpacing: 1.2,
+                            color: TVColors.textPrimary,
+                            letterSpacing: 1.4,
                           ),
                         ),
                       ),
@@ -190,8 +190,12 @@ class _TVSidebarState extends State<TVSidebar> {
                       // 4. Aktivasi TV / Profile
                       _buildNavItem(
                         navKey: 'login',
-                        icon: auth.isLoggedIn ? Icons.account_circle_rounded : Icons.login_rounded,
-                        label: auth.isLoggedIn ? (auth.currentUser?.name ?? "Profil") : "Aktivasi TV",
+                        icon: auth.isLoggedIn
+                            ? (Constant.userIsKid ? Icons.child_care_rounded : Icons.account_circle_rounded)
+                            : Icons.login_rounded,
+                        label: auth.isLoggedIn
+                            ? (Constant.userIsKid ? "Kids" : (auth.currentUser?.name ?? "Profil"))
+                            : "Aktivasi TV",
                         isSpecial: !auth.isLoggedIn,
                         onTap: () => widget.onSelect('login'),
                       ),
@@ -250,9 +254,9 @@ class _TVSidebarState extends State<TVSidebar> {
               Icon(
                 icon,
                 color: isSelected
-                    ? Colors.white
+                    ? Colors.black
                     : isSpecial
-                        ? TVColors.accent
+                        ? TVColors.primary
                         : TVColors.textSecondary,
                 size: 22,
               ),
@@ -263,13 +267,13 @@ class _TVSidebarState extends State<TVSidebar> {
                     label,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.outfit(
+                    style: GoogleFonts.inter(
                       fontSize: 14,
-                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                      fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500,
                       color: isSelected
-                          ? Colors.white
+                          ? Colors.black
                           : isSpecial
-                              ? TVColors.accent
+                              ? TVColors.primary
                               : TVColors.textPrimary,
                     ),
                   ),

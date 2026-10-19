@@ -142,62 +142,69 @@ class _TVHomePageState extends State<TVHomePage> {
 
     return Scaffold(
       backgroundColor: TVColors.appBg,
-      body: Row(
+      body: Stack(
         children: [
-          // 1. Android TV Sidebar Navigation
-          TVSidebar(
-            currentNavKey: _currentNavKey,
-            onSelect: _onNavSelect,
+          // 1. Main Content Area (Clipped at x = 68 to prevent any overlap with sidebar)
+          Positioned.fill(
+            left: 68.0,
+            child: ClipRect(
+              child: SingleChildScrollView(
+                controller: _scrollController,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Top Hero Banner
+                    if (homeProvider.loadingBanners)
+                      _buildBannerShimmer()
+                    else if (homeProvider.banners.isNotEmpty)
+                      TVBanner(
+                        banners: homeProvider.banners,
+                        onPlayTap: _playBanner,
+                        onDetailTap: _openBannerDetails,
+                      )
+                    else if (homeProvider.selectedTypeId != 0)
+                      Padding(
+                        padding: const EdgeInsets.only(left: 28, top: 32, bottom: 8),
+                        child: Text(
+                          homeProvider.selectedTypeName,
+                          style: GoogleFonts.inter(
+                            fontSize: 28,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                          ),
+                        ),
+                      )
+                    else
+                      const SizedBox(height: 24),
+
+                    // Horizontal Section Rows (Top 10, Recommendations, etc.)
+                    if (homeProvider.loadingSections)
+                      _buildSectionsShimmer()
+                    else if (homeProvider.sections.isNotEmpty)
+                      ...homeProvider.sections.map(
+                        (section) => TVSectionRow(
+                          section: section,
+                          onContentTap: _openDetails,
+                        ),
+                      )
+                    else
+                      _buildNoData(),
+
+                    const SizedBox(height: 50),
+                  ],
+                ),
+              ),
+            ),
           ),
 
-          // 2. Main Content Area
-          Expanded(
-            child: SingleChildScrollView(
-              controller: _scrollController,
-              clipBehavior: Clip.none,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Top Hero Banner
-                  if (homeProvider.loadingBanners)
-                    _buildBannerShimmer()
-                  else if (homeProvider.banners.isNotEmpty)
-                    TVBanner(
-                      banners: homeProvider.banners,
-                      onPlayTap: _playBanner,
-                      onDetailTap: _openBannerDetails,
-                    )
-                  else if (homeProvider.selectedTypeId != 0)
-                    Padding(
-                      padding: const EdgeInsets.only(left: 28, top: 32, bottom: 8),
-                      child: Text(
-                        homeProvider.selectedTypeName,
-                        style: GoogleFonts.outfit(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
-                        ),
-                      ),
-                    )
-                  else
-                    const SizedBox(height: 24),
-
-                  // Horizontal Section Rows (Top 10, Recommendations, etc.)
-                  if (homeProvider.loadingSections)
-                    _buildSectionsShimmer()
-                  else if (homeProvider.sections.isNotEmpty)
-                    ...homeProvider.sections.map(
-                      (section) => TVSectionRow(
-                        section: section,
-                        onContentTap: _openDetails,
-                      ),
-                    )
-                  else
-                    _buildNoData(),
-
-                  const SizedBox(height: 50),
-                ],
-              ),
+          // 2. Android TV Sidebar Navigation (Always on top of content)
+          Positioned(
+            left: 0,
+            top: 0,
+            bottom: 0,
+            child: TVSidebar(
+              currentNavKey: _currentNavKey,
+              onSelect: _onNavSelect,
             ),
           ),
         ],
@@ -276,7 +283,7 @@ class _TVHomePageState extends State<TVHomePage> {
             const SizedBox(height: 12),
             Text(
               "Belum ada konten pada kategori ini",
-              style: GoogleFonts.outfit(
+              style: GoogleFonts.inter(
                 color: TVColors.textMuted,
                 fontSize: 15,
               ),

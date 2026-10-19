@@ -46,7 +46,7 @@ class NexstreamTVApp extends StatelessWidget {
             secondary: TVColors.accent,
             surface: TVColors.surfaceBg,
           ),
-          textTheme: GoogleFonts.outfitTextTheme(
+          textTheme: GoogleFonts.interTextTheme(
             ThemeData.dark().textTheme,
           ),
           visualDensity: VisualDensity.adaptivePlatformDensity,

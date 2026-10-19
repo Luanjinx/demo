@@ -37,12 +37,12 @@ class TVSectionRow extends StatelessWidget {
     switch (layout) {
       case TVCardLayout.portrait:
       case TVCardLayout.indexPortrait:
-        return 235.0;
+        return 255.0;
       case TVCardLayout.landscape:
       case TVCardLayout.indexLandscape:
-        return 165.0;
+        return 175.0;
       case TVCardLayout.square:
-        return 185.0;
+        return 195.0;
     }
   }
 
@@ -75,7 +75,7 @@ class TVSectionRow extends StatelessWidget {
                 const SizedBox(width: 10),
                 Text(
                   section.title ?? '',
-                  style: GoogleFonts.outfit(
+                  style: GoogleFonts.inter(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                     color: TVColors.textPrimary,
@@ -86,12 +86,12 @@ class TVSectionRow extends StatelessWidget {
             ),
           ),
 
-          // Horizontal List
+          // Horizontal List (Clipped so posters never bleed over the sidebar)
           SizedBox(
             height: height,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              clipBehavior: Clip.none,
+              clipBehavior: Clip.hardEdge,
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               itemCount: items.length,
               itemBuilder: (context, index) {

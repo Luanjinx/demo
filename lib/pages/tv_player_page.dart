@@ -149,7 +149,7 @@ class _TVPlayerPageState extends State<TVPlayerPage> {
       debugPrint("Error initializing ExoPlayer: $e");
       if (mounted) {
         setState(() {
-          _errorMessage = "Gagal memutar video dengan ExoPlayer. Server video sedang sibuk atau format tidak didukung.";
+          _errorMessage = "Gagal memutar video. Server video sedang sibuk atau format tidak didukung.";
         });
       }
     }
@@ -159,7 +159,7 @@ class _TVPlayerPageState extends State<TVPlayerPage> {
     if (!mounted) return;
     if (_controller != null && _controller!.value.hasError) {
       setState(() {
-        _errorMessage = "Terjadi kesalahan saat pemutaran video ExoPlayer.";
+        _errorMessage = "Terjadi kesalahan saat memutar video.";
       });
     }
 
@@ -408,7 +408,7 @@ class _TVPlayerPageState extends State<TVPlayerPage> {
                             children: [
                               CircularProgressIndicator(color: TVColors.primary),
                               SizedBox(height: 16),
-                              Text("Memuat video dengan ExoPlayer...", style: TextStyle(color: Colors.white70)),
+                              Text("Memuat video...", style: TextStyle(color: Colors.white70)),
                             ],
                           ),
               ),
@@ -425,7 +425,7 @@ class _TVPlayerPageState extends State<TVPlayerPage> {
                     ),
                     child: Text(
                       _seekFeedback!,
-                      style: GoogleFonts.outfit(
+                      style: GoogleFonts.inter(
                         fontSize: 26,
                         fontWeight: FontWeight.w800,
                         color: Colors.white,
@@ -479,44 +479,20 @@ class _TVPlayerPageState extends State<TVPlayerPage> {
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Row(
-                                        children: [
-                                          Flexible(
-                                            child: Text(
-                                              _currentTitle,
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: GoogleFonts.outfit(
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.w700,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ),
-                                          const SizedBox(width: 10),
-                                          // ExoPlayer Badge
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                            decoration: BoxDecoration(
-                                              color: TVColors.primary.withValues(alpha: 0.25),
-                                              borderRadius: BorderRadius.circular(4),
-                                              border: Border.all(color: TVColors.primary, width: 0.8),
-                                            ),
-                                            child: Text(
-                                              "ExoPlayer",
-                                              style: GoogleFonts.outfit(
-                                                color: TVColors.primary,
-                                                fontSize: 10,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
+                                      Text(
+                                        _currentTitle,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: GoogleFonts.inter(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w700,
+                                          color: Colors.white,
+                                        ),
                                       ),
                                       if (widget.subtitle != null)
                                         Text(
                                           widget.subtitle!,
-                                          style: GoogleFonts.outfit(
+                                          style: GoogleFonts.inter(
                                             fontSize: 13,
                                             color: TVColors.textSecondary,
                                           ),
@@ -537,7 +513,7 @@ class _TVPlayerPageState extends State<TVPlayerPage> {
                                     ),
                                     child: Text(
                                       _aspectRatioLabel,
-                                      style: GoogleFonts.outfit(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
+                                      style: GoogleFonts.inter(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
                                     ),
                                   ),
                                 ),
@@ -613,9 +589,9 @@ class _TVPlayerPageState extends State<TVPlayerPage> {
                                       child: const Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          Text("Next Ep", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                                          Text("Next Ep", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12)),
                                           SizedBox(width: 4),
-                                          Icon(Icons.skip_next_rounded, color: Colors.white, size: 18),
+                                          Icon(Icons.skip_next_rounded, color: Colors.black, size: 18),
                                         ],
                                       ),
                                     ),
@@ -663,7 +639,7 @@ class _TVPlayerPageState extends State<TVPlayerPage> {
                                     ),
                                     child: Icon(
                                       _controller!.value.isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                                      color: Colors.white,
+                                      color: Colors.black,
                                       size: 42,
                                     ),
                                   ),
@@ -720,7 +696,7 @@ class _TVPlayerPageState extends State<TVPlayerPage> {
                                     children: [
                                       Text(
                                         _formatDuration(_controller!.value.position),
-                                        style: GoogleFonts.outfit(
+                                        style: GoogleFonts.inter(
                                           color: Colors.white,
                                           fontWeight: FontWeight.w600,
                                           fontSize: 14,
@@ -728,7 +704,7 @@ class _TVPlayerPageState extends State<TVPlayerPage> {
                                       ),
                                       Text(
                                         " / ${_formatDuration(_controller!.value.duration)}",
-                                        style: GoogleFonts.outfit(
+                                        style: GoogleFonts.inter(
                                           color: TVColors.textMuted,
                                           fontSize: 14,
                                         ),
@@ -827,8 +803,8 @@ class _TVPlayerPageState extends State<TVPlayerPage> {
                 const Icon(Icons.tune_rounded, color: TVColors.primary, size: 20),
                 const SizedBox(width: 8),
                 Text(
-                  "Pengaturan ExoPlayer",
-                  style: GoogleFonts.outfit(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                  "Pengaturan Pemutar",
+                  style: GoogleFonts.inter(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -838,7 +814,7 @@ class _TVPlayerPageState extends State<TVPlayerPage> {
             if (_availableQualities.isNotEmpty) ...[
               Text(
                 "Resolusi / Kualitas Video",
-                style: GoogleFonts.outfit(color: TVColors.textSecondary, fontSize: 12, fontWeight: FontWeight.w600),
+                style: GoogleFonts.inter(color: TVColors.textSecondary, fontSize: 12, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
               Wrap(
@@ -857,7 +833,7 @@ class _TVPlayerPageState extends State<TVPlayerPage> {
                       ),
                       child: Text(
                         q.label,
-                        style: GoogleFonts.outfit(
+                        style: GoogleFonts.inter(
                           color: Colors.white,
                           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                           fontSize: 12,
@@ -873,7 +849,7 @@ class _TVPlayerPageState extends State<TVPlayerPage> {
             // Playback Speed Options
             Text(
               "Kecepatan Pemutaran",
-              style: GoogleFonts.outfit(color: TVColors.textSecondary, fontSize: 12, fontWeight: FontWeight.w600),
+              style: GoogleFonts.inter(color: TVColors.textSecondary, fontSize: 12, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
             Wrap(
@@ -892,7 +868,7 @@ class _TVPlayerPageState extends State<TVPlayerPage> {
                     ),
                     child: Text(
                       "${speed}x",
-                      style: GoogleFonts.outfit(
+                      style: GoogleFonts.inter(
                         color: Colors.white,
                         fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                         fontSize: 12,
@@ -930,7 +906,7 @@ class _TVPlayerPageState extends State<TVPlayerPage> {
                 const SizedBox(width: 10),
                 Text(
                   "Pilih Episode",
-                  style: GoogleFonts.outfit(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                  style: GoogleFonts.inter(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const Spacer(),
                 TVFocusable(
@@ -986,7 +962,7 @@ class _TVPlayerPageState extends State<TVPlayerPage> {
                               ep.name ?? "Episode ${index + 1}",
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.outfit(
+                              style: GoogleFonts.inter(
                                 color: isCurrent ? Colors.white : Colors.white70,
                                 fontWeight: isCurrent ? FontWeight.bold : FontWeight.w500,
                                 fontSize: 13,
@@ -1015,7 +991,7 @@ class _TVPlayerPageState extends State<TVPlayerPage> {
         Text(
           _errorMessage!,
           textAlign: TextAlign.center,
-          style: GoogleFonts.outfit(color: Colors.white, fontSize: 15),
+          style: GoogleFonts.inter(color: Colors.white, fontSize: 15),
         ),
         const SizedBox(height: 20),
         Row(
@@ -1065,11 +1041,11 @@ class _TVPlayerPageState extends State<TVPlayerPage> {
           ),
           child: Text(
             keyLabel,
-            style: GoogleFonts.outfit(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+            style: GoogleFonts.inter(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
           ),
         ),
         const SizedBox(width: 6),
-        Text(action, style: GoogleFonts.outfit(color: TVColors.textMuted, fontSize: 12)),
+        Text(action, style: GoogleFonts.inter(color: TVColors.textMuted, fontSize: 12)),
       ],
     );
   }

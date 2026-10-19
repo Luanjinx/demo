@@ -73,7 +73,7 @@ class TVApiService {
           'type_id': typeId,
           'is_home_screen': isHomeScreen,
           'device_id': Constant.deviceId,
-          'is_kids_profile': 0,
+          'is_kids_profile': Constant.userIsKid ? 1 : 0,
         },
       );
       if (response.statusCode == 200) {
@@ -102,7 +102,7 @@ class TVApiService {
           'type_id': typeId,
           'is_home_screen': isHomeScreen,
           'device_id': Constant.deviceId,
-          'is_kids_profile': 0,
+          'is_kids_profile': Constant.userIsKid ? 1 : 0,
           'page_no': pageNo,
         },
       );
@@ -198,7 +198,7 @@ class TVApiService {
           'sub_video_type': subVideoType,
           'user_id': _numericUserId,
           'device_id': Constant.deviceId,
-          'is_kids_profile': 0,
+          'is_kids_profile': Constant.userIsKid ? 1 : 0,
         },
       );
       if (response.statusCode == 200) {
@@ -283,7 +283,7 @@ class TVApiService {
           'sub_video_type': subVideoType,
           'user_id': _numericUserId,
           'device_id': Constant.deviceId,
-          'is_kids_profile': 0,
+          'is_kids_profile': Constant.userIsKid ? 1 : 0,
           'page_no': pageNo,
         },
       );

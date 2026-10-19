@@ -72,41 +72,14 @@ class TVCard extends StatelessWidget {
     return Container(
       margin: EdgeInsets.only(
         right: hasRank ? 24 : 14,
-        left: hasRank ? 16 : 0,
+        left: hasRank ? 28 : 0,
         top: 8,
         bottom: 8,
       ),
       child: Stack(
         clipBehavior: Clip.none,
-        alignment: Alignment.centerLeft,
+        alignment: Alignment.bottomLeft,
         children: [
-          // Index Rank Number (Big Stylized Number behind/side)
-          if (hasRank)
-            Positioned(
-              left: _isPortrait ? -22 : -26,
-              bottom: -4,
-              child: IgnorePointer(
-                child: Text(
-                  "${indexRank! + 1}",
-                  style: GoogleFonts.blackOpsOne(
-                    fontSize: _isPortrait ? 85 : 95,
-                    fontWeight: FontWeight.w900,
-                    shadows: [
-                      Shadow(
-                        color: Colors.black.withValues(alpha: 0.9),
-                        offset: const Offset(4, 4),
-                        blurRadius: 8,
-                      ),
-                    ],
-                    foreground: Paint()
-                      ..style = PaintingStyle.stroke
-                      ..strokeWidth = 3.5
-                      ..color = Colors.white.withValues(alpha: 0.85),
-                  ),
-                ),
-              ),
-            ),
-
           // Focusable Card
           TVFocusable(
             onPressed: onTap,
@@ -169,7 +142,7 @@ class TVCard extends StatelessWidget {
                         item.displayName,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.outfit(
+                        style: GoogleFonts.inter(
                           fontSize: 12.5,
                           fontWeight: FontWeight.w600,
                           color: Colors.white,
@@ -190,7 +163,7 @@ class TVCard extends StatelessWidget {
                           ),
                           child: Text(
                             "VIP",
-                            style: GoogleFonts.outfit(
+                            style: GoogleFonts.inter(
                               fontSize: 9.5,
                               fontWeight: FontWeight.w800,
                               color: Colors.black,
@@ -219,7 +192,7 @@ class TVCard extends StatelessWidget {
                               const SizedBox(width: 2),
                               Text(
                                 "${item.avgRating}",
-                                style: GoogleFonts.outfit(
+                                style: GoogleFonts.inter(
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white,
@@ -234,8 +207,58 @@ class TVCard extends StatelessWidget {
               ),
             ),
           ),
+
+          // Two-layer Index Rank Number (Synced with dtlive-app)
+          if (hasRank)
+            Positioned(
+              left: _isPortrait ? -18 : -22,
+              bottom: -6,
+              child: IgnorePointer(
+                child: _buildIndexNumber(indexRank! + 1),
+              ),
+            ),
         ],
       ),
+    );
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     _buildIndexNumber — signature rank number matching dtlive-app
+     Two-layer render: dark shadow stroke → colorPrimary (neon lime) solid fill
+  ───────────────────────────────────────────────────────────────────────── */
+  Widget _buildIndexNumber(int number) {
+    final String numText = "$number";
+    final double fontSize = _isPortrait ? 82.0 : 74.0;
+    const double strokeWidth = 8.0;
+
+    final TextStyle shadowStyle = GoogleFonts.inter(
+      textStyle: TextStyle(
+        fontSize: fontSize,
+        fontWeight: FontWeight.w900,
+        letterSpacing: -4,
+        foreground: Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = strokeWidth + 5
+          ..color = Colors.black.withValues(alpha: 0.75),
+      ),
+    );
+
+    final TextStyle fillStyle = GoogleFonts.inter(
+      textStyle: TextStyle(
+        fontSize: fontSize,
+        fontWeight: FontWeight.w900,
+        letterSpacing: -4,
+        foreground: Paint()
+          ..style = PaintingStyle.fill
+          ..color = TVColors.primary,
+      ),
+    );
+
+    return Stack(
+      children: [
+        Text(numText, style: shadowStyle),
+        Text(numText, style: fillStyle),
+      ],
     );
   }
 }

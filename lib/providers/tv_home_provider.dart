@@ -57,6 +57,12 @@ class TVHomeProvider extends ChangeNotifier {
     await selectTab(0, "Beranda");
   }
 
+  // Reload content after switching between User and Kids profile
+  Future<void> reloadForProfileChange() async {
+    _cache.clear();
+    await selectTab(0, "Beranda");
+  }
+
   Future<void> fetchTypes() async {
     _loadingTypes = true;
     notifyListeners();

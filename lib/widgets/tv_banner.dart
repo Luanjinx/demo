@@ -123,7 +123,7 @@ class _TVBannerState extends State<TVBanner> {
                     ),
                     child: Text(
                       activeItem.categoryName!.toUpperCase(),
-                      style: GoogleFonts.outfit(
+                      style: GoogleFonts.inter(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
                         color: TVColors.accent,
@@ -137,7 +137,7 @@ class _TVBannerState extends State<TVBanner> {
                   activeItem.name ?? '',
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.outfit(
+                  style: GoogleFonts.inter(
                     fontSize: 32,
                     fontWeight: FontWeight.w800,
                     color: Colors.white,
@@ -158,7 +158,7 @@ class _TVBannerState extends State<TVBanner> {
                   activeItem.description ?? '',
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.outfit(
+                  style: GoogleFonts.inter(
                     fontSize: 13,
                     fontWeight: FontWeight.w400,
                     color: TVColors.textSecondary,
@@ -186,18 +186,25 @@ class _TVBannerState extends State<TVBanner> {
                         decoration: BoxDecoration(
                           color: TVColors.primary,
                           borderRadius: BorderRadius.circular(8),
+                          boxShadow: [
+                            BoxShadow(
+                              color: TVColors.primary.withValues(alpha: 0.35),
+                              blurRadius: 12,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 22),
+                            const Icon(Icons.play_arrow_rounded, color: Colors.black, size: 22),
                             const SizedBox(width: 8),
                             Text(
                               "Tonton Sekarang",
-                              style: GoogleFonts.outfit(
+                              style: GoogleFonts.inter(
                                 fontSize: 14,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.black,
                               ),
                             ),
                           ],
@@ -231,7 +238,7 @@ class _TVBannerState extends State<TVBanner> {
                             const SizedBox(width: 8),
                             Text(
                               "Detail",
-                              style: GoogleFonts.outfit(
+                              style: GoogleFonts.inter(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
                                 color: Colors.white,

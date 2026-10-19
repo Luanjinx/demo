@@ -97,7 +97,7 @@ class _TVSearchPageState extends State<TVSearchPage> {
                               _queryController.text.isEmpty
                                   ? "Gunakan remote untuk mengetik judul film, drama, atau anime..."
                                   : _queryController.text,
-                              style: GoogleFonts.outfit(
+                              style: GoogleFonts.inter(
                                 fontSize: 16,
                                 color: _queryController.text.isEmpty
                                     ? TVColors.textMuted
@@ -111,7 +111,7 @@ class _TVSearchPageState extends State<TVSearchPage> {
                           if (_queryController.text.isNotEmpty)
                             Text(
                               "${homeProvider.searchResults.length} Hasil",
-                              style: GoogleFonts.outfit(
+                              style: GoogleFonts.inter(
                                 fontSize: 13,
                                 color: TVColors.accent,
                                 fontWeight: FontWeight.bold,
@@ -165,7 +165,7 @@ class _TVSearchPageState extends State<TVSearchPage> {
                               alignment: Alignment.center,
                               child: Text(
                                 key,
-                                style: GoogleFonts.outfit(
+                                style: GoogleFonts.inter(
                                   fontSize: isAction ? 9 : 14,
                                   fontWeight: FontWeight.w700,
                                   color: Colors.white,
@@ -197,7 +197,7 @@ class _TVSearchPageState extends State<TVSearchPage> {
                                         _queryController.text.isEmpty
                                             ? "Ketik untuk mencari judul favorit Anda"
                                             : "Tidak ada judul yang cocok dengan pencarian",
-                                        style: GoogleFonts.outfit(
+                                        style: GoogleFonts.inter(
                                           color: TVColors.textMuted,
                                           fontSize: 14,
                                         ),

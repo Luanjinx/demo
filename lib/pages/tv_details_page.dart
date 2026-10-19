@@ -42,6 +42,19 @@ class _TVDetailsPageState extends State<TVDetailsPage> {
   List<ContentItem> _relatedContent = [];
   bool _isBookmarked = false;
 
+  String get _selectedSeasonName {
+    final seasons = _detail?.seasons ?? [];
+    for (final s in seasons) {
+      if (s.id == _selectedSeasonId) {
+        return s.name ?? '';
+      }
+    }
+    if (seasons.isNotEmpty) {
+      return seasons.first.name ?? '';
+    }
+    return '';
+  }
+
   @override
   void initState() {
     super.initState();
@@ -163,7 +176,7 @@ class _TVDetailsPageState extends State<TVDetailsPage> {
         SnackBar(
           content: Text(
             widget.videoType == Constant.videoTypeMovie ? "Video belum tersedia" : "Episode belum tersedia",
-            style: GoogleFonts.outfit(color: Colors.white),
+            style: GoogleFonts.inter(color: Colors.white),
           ),
           backgroundColor: TVColors.surfaceBg,
           behavior: SnackBarBehavior.floating,
@@ -211,7 +224,7 @@ class _TVDetailsPageState extends State<TVDetailsPage> {
       SnackBar(
         content: Text(
           _isBookmarked ? "Ditambahkan ke Daftar Tonton" : "Dihapus dari Daftar Tonton",
-          style: GoogleFonts.outfit(color: Colors.white),
+          style: GoogleFonts.inter(color: Colors.white),
         ),
         duration: const Duration(seconds: 2),
         backgroundColor: TVColors.surfaceBg,
@@ -233,7 +246,7 @@ class _TVDetailsPageState extends State<TVDetailsPage> {
               const SizedBox(height: 18),
               Text(
                 "Memuat detail konten...",
-                style: GoogleFonts.outfit(color: TVColors.textMuted, fontSize: 14),
+                style: GoogleFonts.inter(color: TVColors.textMuted, fontSize: 14),
               ),
             ],
           ),
@@ -252,12 +265,12 @@ class _TVDetailsPageState extends State<TVDetailsPage> {
               const SizedBox(height: 14),
               Text(
                 "Gagal memuat detail konten",
-                style: GoogleFonts.outfit(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
+                style: GoogleFonts.inter(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
               Text(
                 "Pastikan koneksi internet aktif atau coba beberapa saat lagi",
-                style: GoogleFonts.outfit(color: TVColors.textMuted, fontSize: 13),
+                style: GoogleFonts.inter(color: TVColors.textMuted, fontSize: 13),
               ),
               const SizedBox(height: 24),
               Row(
@@ -387,7 +400,7 @@ class _TVDetailsPageState extends State<TVDetailsPage> {
                               const SizedBox(width: 4),
                               Text(
                                 "${d.avgRating}",
-                                style: GoogleFonts.outfit(
+                                style: GoogleFonts.inter(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12,
@@ -406,6 +419,10 @@ class _TVDetailsPageState extends State<TVDetailsPage> {
                         _metaBadge(d.duration!),
                         const SizedBox(width: 10),
                       ],
+                      if (isTVShow && d.seasons != null && d.seasons!.isNotEmpty) ...[
+                        _metaBadge("${d.seasons!.length} Season"),
+                        const SizedBox(width: 10),
+                      ],
                       if ((d.isPremium ?? 0) == 1) ...[
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -415,7 +432,7 @@ class _TVDetailsPageState extends State<TVDetailsPage> {
                           ),
                           child: Text(
                             "VIP",
-                            style: GoogleFonts.outfit(
+                            style: GoogleFonts.inter(
                               color: Colors.black,
                               fontWeight: FontWeight.w900,
                               fontSize: 11,
@@ -425,24 +442,6 @@ class _TVDetailsPageState extends State<TVDetailsPage> {
                         const SizedBox(width: 10),
                       ],
                       _metaBadge("HD"),
-                      const SizedBox(width: 10),
-                      // ExoPlayer Support Badge
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: TVColors.primary.withValues(alpha: 0.20),
-                          borderRadius: BorderRadius.circular(4),
-                          border: Border.all(color: TVColors.primary, width: 0.8),
-                        ),
-                        child: Text(
-                          "ExoPlayer Ready",
-                          style: GoogleFonts.outfit(
-                            color: TVColors.primary,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 11,
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                   const SizedBox(height: 12),
@@ -452,7 +451,7 @@ class _TVDetailsPageState extends State<TVDetailsPage> {
                     width: 580,
                     child: Text(
                       d.displayName,
-                      style: GoogleFonts.outfit(
+                      style: GoogleFonts.inter(
                         fontSize: 34,
                         fontWeight: FontWeight.w800,
                         color: Colors.white,
@@ -466,7 +465,7 @@ class _TVDetailsPageState extends State<TVDetailsPage> {
                   if (d.categoryName != null && d.categoryName!.isNotEmpty)
                     Text(
                       d.categoryName!,
-                      style: GoogleFonts.outfit(
+                      style: GoogleFonts.inter(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                         color: TVColors.accent,
@@ -490,18 +489,25 @@ class _TVDetailsPageState extends State<TVDetailsPage> {
                           decoration: BoxDecoration(
                             color: TVColors.primary,
                             borderRadius: BorderRadius.circular(8),
+                            boxShadow: [
+                              BoxShadow(
+                                color: TVColors.primary.withValues(alpha: 0.35),
+                                blurRadius: 14,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 24),
+                              const Icon(Icons.play_arrow_rounded, color: Colors.black, size: 24),
                               const SizedBox(width: 8),
                               Text(
                                 isTVShow ? "Mulai Menonton (Ep 1)" : "Tonton Film",
-                                style: GoogleFonts.outfit(
+                                style: GoogleFonts.inter(
                                   fontSize: 15,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.white,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.black,
                                 ),
                               ),
                             ],
@@ -571,7 +577,7 @@ class _TVDetailsPageState extends State<TVDetailsPage> {
                     width: 620,
                     child: Text(
                       d.description ?? '',
-                      style: GoogleFonts.outfit(
+                      style: GoogleFonts.inter(
                         fontSize: 13.5,
                         fontWeight: FontWeight.w400,
                         color: TVColors.textSecondary,
@@ -616,7 +622,7 @@ class _TVDetailsPageState extends State<TVDetailsPage> {
       ),
       child: Text(
         text,
-        style: GoogleFonts.outfit(
+        style: GoogleFonts.inter(
           color: Colors.white70,
           fontWeight: FontWeight.w600,
           fontSize: 11,
@@ -642,7 +648,7 @@ class _TVDetailsPageState extends State<TVDetailsPage> {
             const SizedBox(width: 10),
             Text(
               "Pemeran & Kru",
-              style: GoogleFonts.outfit(
+              style: GoogleFonts.inter(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
                 color: Colors.white,
@@ -687,14 +693,14 @@ class _TVDetailsPageState extends State<TVDetailsPage> {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.outfit(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
+                        style: GoogleFonts.inter(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
                       ),
                       Text(
                         cast.type ?? 'Actor',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.outfit(color: TVColors.textMuted, fontSize: 10.5),
+                        style: GoogleFonts.inter(color: TVColors.textMuted, fontSize: 10.5),
                       ),
                     ],
                   ),
@@ -724,7 +730,7 @@ class _TVDetailsPageState extends State<TVDetailsPage> {
             const SizedBox(width: 10),
             Text(
               "Konten Serupa",
-              style: GoogleFonts.outfit(
+              style: GoogleFonts.inter(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
                 color: Colors.white,
@@ -772,42 +778,94 @@ class _TVDetailsPageState extends State<TVDetailsPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Season Tabs
-        if (seasons.length > 1)
-          Container(
-            height: 38,
-            margin: const EdgeInsets.only(bottom: 16),
+        // Season Tabs (Always shown when series has season data)
+        if (seasons.isNotEmpty) ...[
+          Row(
+            children: [
+              Container(
+                width: 4,
+                height: 18,
+                decoration: BoxDecoration(
+                  color: TVColors.primary,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Text(
+                "Musim / Season",
+                style: GoogleFonts.inter(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 42,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
+              clipBehavior: Clip.none,
               itemCount: seasons.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 10),
+              separatorBuilder: (_, __) => const SizedBox(width: 12),
               itemBuilder: (context, index) {
                 final s = seasons[index];
                 final isSelected = s.id == _selectedSeasonId;
 
                 return TVFocusable(
                   onPressed: () => _selectSeason(s.id ?? 0),
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: BorderRadius.circular(8),
+                  scaleFactor: 1.05,
+                  focusBorderColor: TVColors.primary,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                     decoration: BoxDecoration(
                       color: isSelected ? TVColors.primary : Colors.white.withValues(alpha: 0.10),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      s.name ?? "Season ${index + 1}",
-                      style: GoogleFonts.outfit(
-                        fontSize: 13,
-                        fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                        color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: isSelected
+                            ? TVColors.primary
+                            : Colors.white.withValues(alpha: 0.18),
+                        width: 1,
                       ),
+                      boxShadow: isSelected
+                          ? [
+                              BoxShadow(
+                                color: TVColors.primary.withValues(alpha: 0.35),
+                                blurRadius: 10,
+                                offset: const Offset(0, 2),
+                              ),
+                            ]
+                          : null,
+                    ),
+                    alignment: Alignment.center,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (isSelected) ...[
+                          const Icon(Icons.check_circle_rounded, color: Colors.black, size: 16),
+                          const SizedBox(width: 6),
+                        ],
+                        Text(
+                          s.name ?? "Season ${index + 1}",
+                          style: GoogleFonts.inter(
+                            fontSize: 14,
+                            fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                            color: isSelected ? Colors.black : Colors.white,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 );
               },
             ),
           ),
+          const SizedBox(height: 24),
+        ],
 
+        // Episodes Header with current season name & count
         Row(
           children: [
             Container(
@@ -821,12 +879,41 @@ class _TVDetailsPageState extends State<TVDetailsPage> {
             const SizedBox(width: 10),
             Text(
               "Daftar Episode",
-              style: GoogleFonts.outfit(
+              style: GoogleFonts.inter(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
                 color: Colors.white,
               ),
             ),
+            if (_selectedSeasonName.isNotEmpty) ...[
+              const SizedBox(width: 8),
+              Text(
+                "• $_selectedSeasonName",
+                style: GoogleFonts.inter(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  color: TVColors.textSecondary,
+                ),
+              ),
+            ],
+            if (!_loadingEpisodes && _episodes.isNotEmpty) ...[
+              const SizedBox(width: 10),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  "${_episodes.length} Episode",
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: TVColors.primary,
+                  ),
+                ),
+              ),
+            ],
           ],
         ),
         const SizedBox(height: 12),
@@ -836,7 +923,7 @@ class _TVDetailsPageState extends State<TVDetailsPage> {
         else if (_episodes.isEmpty)
           Text(
             "Belum ada episode di season ini",
-            style: GoogleFonts.outfit(color: TVColors.textMuted, fontSize: 13),
+            style: GoogleFonts.inter(color: TVColors.textMuted, fontSize: 13),
           )
         else
           SizedBox(
@@ -895,7 +982,7 @@ class _TVDetailsPageState extends State<TVDetailsPage> {
                               ep.name ?? "Episode ${index + 1}",
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.outfit(
+                              style: GoogleFonts.inter(
                                 fontSize: 12.5,
                                 fontWeight: FontWeight.w600,
                                 color: Colors.white,

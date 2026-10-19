@@ -3,7 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../providers/tv_auth_provider.dart';
+import '../providers/tv_home_provider.dart';
 import '../utils/color.dart';
+import '../utils/constant.dart';
 import '../widgets/tv_focusable.dart';
 
 class TVLoginPage extends StatefulWidget {
@@ -66,66 +68,341 @@ class _TVLoginPageState extends State<TVLoginPage> {
 
   Widget _buildLoggedInView(TVAuthProvider auth) {
     return Center(
-      child: Container(
-        width: 480,
-        padding: const EdgeInsets.all(32),
-        decoration: BoxDecoration(
-          color: TVColors.surfaceBg,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.10), width: 1),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.account_circle_rounded, color: TVColors.accent, size: 72),
-            const SizedBox(height: 16),
-            Text(
-              auth.currentUser?.name ?? "Pengguna Nexstream",
-              style: GoogleFonts.outfit(
-                fontSize: 22,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        child: Container(
+          width: 560,
+          padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 26),
+          decoration: BoxDecoration(
+            color: TVColors.surfaceBg,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.12), width: 1),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.50),
+                blurRadius: 30,
+                offset: const Offset(0, 10),
               ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              auth.currentUser?.email ?? "",
-              style: GoogleFonts.outfit(
-                fontSize: 14,
-                color: TVColors.textSecondary,
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // 1. Header: Profiles (Left) and Edit (Right)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "Profiles",
+                    style: GoogleFonts.inter(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                  TVFocusable(
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          backgroundColor: TVColors.surfaceBg,
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            side: BorderSide(color: TVColors.primary.withValues(alpha: 0.3)),
+                          ),
+                          content: Text(
+                            "Kelola nama atau avatar profil dapat dilakukan melalui aplikasi Nexstream di Smartphone atau Web.",
+                            style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
+                          ),
+                        ),
+                      );
+                    },
+                    borderRadius: BorderRadius.circular(6),
+                    focusBorderColor: TVColors.primary,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Image.asset(
+                            'assets/images/ic_edit.png',
+                            width: 14,
+                            height: 14,
+                            color: TVColors.primary,
+                            errorBuilder: (_, __, ___) => const Icon(
+                              Icons.edit_outlined,
+                              color: TVColors.primary,
+                              size: 15,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            "Edit",
+                            style: GoogleFonts.inter(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: TVColors.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 28),
+              const SizedBox(height: 22),
 
-            TVFocusable(
-              onPressed: () async {
-                await auth.logout();
-                if (mounted) {
-                  auth.requestTVCode();
-                }
-              },
-              borderRadius: BorderRadius.circular(8),
-              focusBorderColor: TVColors.primary,
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.20), width: 1),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  "Keluar Akun",
-                  style: GoogleFonts.outfit(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
+              // 2. Profiles Row
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // User Profile
+                  _buildProfileItem(
+                    name: (auth.currentUser?.name?.isNotEmpty == true)
+                        ? auth.currentUser!.name!
+                        : "User",
+                    image: auth.currentUser?.image,
+                    isActive: !Constant.userIsKid,
+                    isKid: false,
+                    onTap: () async {
+                      if (Constant.userIsKid) {
+                        await auth.switchProfile(isKid: false);
+                        if (mounted) {
+                          Provider.of<TVHomeProvider>(context, listen: false).reloadForProfileChange();
+                        }
+                      }
+                    },
+                  ),
+                  const SizedBox(width: 24),
+
+                  // Kids Profile
+                  _buildProfileItem(
+                    name: "Kids",
+                    image: null,
+                    isActive: Constant.userIsKid,
+                    isKid: true,
+                    onTap: () async {
+                      if (!Constant.userIsKid) {
+                        await auth.switchProfile(isKid: true);
+                        if (mounted) {
+                          Provider.of<TVHomeProvider>(context, listen: false).reloadForProfileChange();
+                        }
+                      }
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+
+              // Subtle divider
+              Divider(color: Colors.white.withValues(alpha: 0.08), height: 1),
+              const SizedBox(height: 16),
+
+              // 3. Account Info Row
+              Row(
+                children: [
+                  const Icon(
+                    Icons.account_circle_outlined,
+                    color: TVColors.textSecondary,
+                    size: 18,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      auth.currentUser?.email?.isNotEmpty == true
+                          ? auth.currentUser!.email!
+                          : (auth.currentUser?.name ?? "Pengguna Nexstream"),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        color: TVColors.textSecondary,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: TVColors.primary.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: TVColors.primary.withValues(alpha: 0.35)),
+                    ),
+                    child: Text(
+                      Constant.userIsKid ? "Profil Anak Aktif" : "Profil Utama Aktif",
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: TVColors.primary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+
+              // 4. Logout Button
+              TVFocusable(
+                onPressed: () async {
+                  await auth.logout();
+                  if (mounted) {
+                    auth.requestTVCode();
+                  }
+                },
+                borderRadius: BorderRadius.circular(10),
+                focusBorderColor: Colors.redAccent,
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.16), width: 1),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.logout_rounded, color: Colors.white70, size: 18),
+                      const SizedBox(width: 8),
+                      Text(
+                        "Keluar Akun",
+                        style: GoogleFonts.inter(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfileItem({
+    required String name,
+    required String? image,
+    required bool isActive,
+    required bool isKid,
+    required VoidCallback onTap,
+  }) {
+    final String initial = name.trim().isNotEmpty
+        ? name.trim()[0].toUpperCase()
+        : (isKid ? 'K' : 'U');
+
+    return TVFocusable(
+      onPressed: onTap,
+      scaleFactor: 1.08,
+      borderRadius: BorderRadius.circular(46),
+      focusBorderColor: TVColors.primary,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            width: 84,
+            height: 90,
+            child: Stack(
+              alignment: Alignment.topCenter,
+              clipBehavior: Clip.none,
+              children: [
+                // Circular Avatar
+                Container(
+                  width: 82,
+                  height: 82,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: isActive ? Colors.white : Colors.transparent,
+                      width: 2.0,
+                    ),
+                  ),
+                  padding: const EdgeInsets.all(2.5),
+                  child: ClipOval(
+                    child: isKid
+                        ? Image.asset(
+                            'assets/images/kids.png',
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Container(
+                              color: const Color(0xFFF39C12),
+                              alignment: Alignment.center,
+                              child: Text(
+                                "KiDS",
+                                style: GoogleFonts.inter(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w900,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          )
+                        : (image != null && image.isNotEmpty && !image.contains('no_img')
+                            ? Image.network(
+                                image,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => _buildLetterAvatar(initial),
+                              )
+                            : _buildLetterAvatar(initial)),
+                  ),
+                ),
+
+                // Active dot indicator at the bottom edge of the circle
+                if (isActive)
+                  Positioned(
+                    bottom: 4,
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      padding: const EdgeInsets.all(1.5),
+                      child: Container(
+                        width: 9,
+                        height: 9,
+                        decoration: const BoxDecoration(
+                          color: TVColors.primary,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
-          ],
+          ),
+          const SizedBox(height: 6),
+          SizedBox(
+            width: 90,
+            child: Text(
+              name,
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.inter(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLetterAvatar(String initial) {
+    return Container(
+      color: const Color(0xFFBA3928),
+      alignment: Alignment.center,
+      child: Text(
+        initial,
+        style: GoogleFonts.inter(
+          fontSize: 36,
+          fontWeight: FontWeight.w700,
+          color: Colors.white,
         ),
       ),
     );
@@ -151,7 +428,7 @@ class _TVLoginPageState extends State<TVLoginPage> {
                 children: [
                   Text(
                     "Aktivasi Akun di Smart TV",
-                    style: GoogleFonts.outfit(
+                    style: GoogleFonts.inter(
                       fontSize: 24,
                       fontWeight: FontWeight.w800,
                       color: Colors.white,
@@ -160,7 +437,7 @@ class _TVLoginPageState extends State<TVLoginPage> {
                   const SizedBox(height: 6),
                   Text(
                     "Masuk ke akun Nexstream Anda dengan mudah tanpa mengetik kata sandi di TV.",
-                    style: GoogleFonts.outfit(
+                    style: GoogleFonts.inter(
                       fontSize: 13,
                       color: TVColors.textSecondary,
                     ),
@@ -199,7 +476,7 @@ class _TVLoginPageState extends State<TVLoginPage> {
                         alignment: Alignment.center,
                         child: Text(
                           char,
-                          style: GoogleFonts.outfit(
+                          style: GoogleFonts.inter(
                             fontSize: 24,
                             fontWeight: FontWeight.w900,
                             color: Colors.white,
@@ -225,7 +502,7 @@ class _TVLoginPageState extends State<TVLoginPage> {
                       const SizedBox(width: 8),
                       Text(
                         "Menunggu konfirmasi dari smartphone...",
-                        style: GoogleFonts.outfit(
+                        style: GoogleFonts.inter(
                           fontSize: 12,
                           color: TVColors.accent,
                           fontStyle: FontStyle.italic,
@@ -243,7 +520,7 @@ class _TVLoginPageState extends State<TVLoginPage> {
                           ),
                           child: Text(
                             "Muat Ulang Kode",
-                            style: GoogleFonts.outfit(fontSize: 11, color: Colors.white70),
+                            style: GoogleFonts.inter(fontSize: 11, color: Colors.white70),
                           ),
                         ),
                       ),
@@ -298,7 +575,7 @@ class _TVLoginPageState extends State<TVLoginPage> {
           alignment: Alignment.center,
           child: Text(
             num,
-            style: GoogleFonts.outfit(
+            style: GoogleFonts.inter(
               fontSize: 12,
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -308,7 +585,7 @@ class _TVLoginPageState extends State<TVLoginPage> {
         const SizedBox(width: 12),
         Text(
           text,
-          style: GoogleFonts.outfit(
+          style: GoogleFonts.inter(
             fontSize: 14,
             fontWeight: FontWeight.w500,
             color: TVColors.textPrimary,
