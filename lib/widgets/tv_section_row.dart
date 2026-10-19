@@ -6,7 +6,7 @@ import 'tv_card.dart';
 
 class TVSectionRow extends StatelessWidget {
   final SectionItem section;
-  final Function(ContentItem item) onContentTap;
+  final Function(ContentItem item, SectionItem section) onContentTap;
 
   const TVSectionRow({
     super.key,
@@ -103,7 +103,7 @@ class TVSectionRow extends StatelessWidget {
                   item: item,
                   layout: layout,
                   indexRank: isIndexed ? index : null,
-                  onTap: () => onContentTap(item),
+                  onTap: () => onContentTap(item, section),
                 );
               },
             ),

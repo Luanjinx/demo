@@ -23,6 +23,39 @@ class ContentDetailModel {
   }
 }
 
+class QualityOption {
+  final String label;
+  final String url;
+
+  const QualityOption({required this.label, required this.url});
+}
+
+class CastItem {
+  int? id;
+  String? name;
+  String? image;
+  String? type;
+  String? personalInfo;
+
+  CastItem({
+    this.id,
+    this.name,
+    this.image,
+    this.type,
+    this.personalInfo,
+  });
+
+  factory CastItem.fromJson(Map<String, dynamic> json) {
+    return CastItem(
+      id: json['id'],
+      name: json['name'],
+      image: json['image'],
+      type: json['type'] ?? 'Actor',
+      personalInfo: json['personal_info'],
+    );
+  }
+}
+
 class DetailResult {
   int? id;
   String? name;
@@ -49,8 +82,17 @@ class DetailResult {
   String? video720;
   String? video1080;
   String? videoUploadType;
+  String? trailerUrl;
+  String? trailerType;
+  String? subtitle1;
+  String? subtitle2;
+  String? subtitle3;
+  String? subtitleLang1;
+  String? subtitleLang2;
+  String? subtitleLang3;
   List<SeasonItem>? seasons;
   List<EpisodeItem>? episodes;
+  List<CastItem>? cast;
   List<ContentItem>? relatedContent;
 
   DetailResult({
@@ -79,8 +121,17 @@ class DetailResult {
     this.video720,
     this.video1080,
     this.videoUploadType,
+    this.trailerUrl,
+    this.trailerType,
+    this.subtitle1,
+    this.subtitle2,
+    this.subtitle3,
+    this.subtitleLang1,
+    this.subtitleLang2,
+    this.subtitleLang3,
     this.seasons,
     this.episodes,
+    this.cast,
     this.relatedContent,
   });
 
@@ -98,6 +149,32 @@ class DetailResult {
       return thumbnail!;
     }
     return landscape ?? '';
+  }
+
+  List<QualityOption> get qualities {
+    final list = <QualityOption>[];
+    if (video1080 != null && video1080!.trim().isNotEmpty) {
+      list.add(QualityOption(label: '1080p', url: video1080!.trim()));
+    }
+    if (video720 != null && video720!.trim().isNotEmpty) {
+      list.add(QualityOption(label: '720p', url: video720!.trim()));
+    }
+    if (video480 != null && video480!.trim().isNotEmpty) {
+      list.add(QualityOption(label: '480p', url: video480!.trim()));
+    }
+    if (video320 != null && video320!.trim().isNotEmpty) {
+      list.add(QualityOption(label: '320p', url: video320!.trim()));
+    }
+    if (list.isEmpty && videoUrl != null && videoUrl!.trim().isNotEmpty) {
+      list.add(QualityOption(label: 'Standard', url: videoUrl!.trim()));
+    }
+    return list;
+  }
+
+  String get playableVideoUrl {
+    final q = qualities;
+    if (q.isNotEmpty) return q.first.url;
+    return '';
   }
 
   factory DetailResult.fromJson(Map<String, dynamic> json) {
@@ -127,14 +204,25 @@ class DetailResult {
       video720: json['video_720'],
       video1080: json['video_1080'],
       videoUploadType: json['video_upload_type'],
-      seasons: json['session'] != null
-          ? (json['session'] as List).map((i) => SeasonItem.fromJson(i)).toList()
+      trailerUrl: json['trailer_url'],
+      trailerType: json['trailer_type'],
+      subtitle1: json['subtitle_1'],
+      subtitle2: json['subtitle_2'],
+      subtitle3: json['subtitle_3'],
+      subtitleLang1: json['subtitle_lang_1'],
+      subtitleLang2: json['subtitle_lang_2'],
+      subtitleLang3: json['subtitle_lang_3'],
+      seasons: (json['season'] ?? json['session']) != null
+          ? ((json['season'] ?? json['session']) as List).map((i) => SeasonItem.fromJson(i)).toList()
           : null,
-      episodes: json['episode'] != null
-          ? (json['episode'] as List).map((i) => EpisodeItem.fromJson(i)).toList()
+      episodes: (json['episode'] ?? json['episodes']) != null
+          ? ((json['episode'] ?? json['episodes']) as List).map((i) => EpisodeItem.fromJson(i)).toList()
           : null,
-      relatedContent: json['related_video'] != null
-          ? (json['related_video'] as List).map((i) => ContentItem.fromJson(i)).toList()
+      cast: json['cast'] != null
+          ? (json['cast'] as List).map((i) => CastItem.fromJson(i)).toList()
+          : null,
+      relatedContent: (json['related_video'] ?? json['related_content']) != null
+          ? ((json['related_video'] ?? json['related_content']) as List).map((i) => ContentItem.fromJson(i)).toList()
           : null,
     );
   }
@@ -172,6 +260,13 @@ class EpisodeItem {
   String? videoUploadType;
   int? isPremium;
   int? isBuy;
+  int? duration;
+  String? subtitle1;
+  String? subtitle2;
+  String? subtitle3;
+  String? subtitleLang1;
+  String? subtitleLang2;
+  String? subtitleLang3;
 
   EpisodeItem({
     this.id,
@@ -189,7 +284,40 @@ class EpisodeItem {
     this.videoUploadType,
     this.isPremium,
     this.isBuy,
+    this.duration,
+    this.subtitle1,
+    this.subtitle2,
+    this.subtitle3,
+    this.subtitleLang1,
+    this.subtitleLang2,
+    this.subtitleLang3,
   });
+
+  List<QualityOption> get qualities {
+    final list = <QualityOption>[];
+    if (video1080 != null && video1080!.trim().isNotEmpty) {
+      list.add(QualityOption(label: '1080p', url: video1080!.trim()));
+    }
+    if (video720 != null && video720!.trim().isNotEmpty) {
+      list.add(QualityOption(label: '720p', url: video720!.trim()));
+    }
+    if (video480 != null && video480!.trim().isNotEmpty) {
+      list.add(QualityOption(label: '480p', url: video480!.trim()));
+    }
+    if (video320 != null && video320!.trim().isNotEmpty) {
+      list.add(QualityOption(label: '320p', url: video320!.trim()));
+    }
+    if (list.isEmpty && videoUrl != null && videoUrl!.trim().isNotEmpty) {
+      list.add(QualityOption(label: 'Standard', url: videoUrl!.trim()));
+    }
+    return list;
+  }
+
+  String get playableVideoUrl {
+    final q = qualities;
+    if (q.isNotEmpty) return q.first.url;
+    return '';
+  }
 
   factory EpisodeItem.fromJson(Map<String, dynamic> json) {
     return EpisodeItem(
@@ -208,6 +336,15 @@ class EpisodeItem {
       videoUploadType: json['video_upload_type'],
       isPremium: json['is_premium'],
       isBuy: json['is_buy'],
+      duration: json['video_duration'] is int
+          ? json['video_duration']
+          : int.tryParse(json['video_duration']?.toString() ?? '0'),
+      subtitle1: json['subtitle_1'],
+      subtitle2: json['subtitle_2'],
+      subtitle3: json['subtitle_3'],
+      subtitleLang1: json['subtitle_lang_1'],
+      subtitleLang2: json['subtitle_lang_2'],
+      subtitleLang3: json['subtitle_lang_3'],
     );
   }
 }

@@ -226,6 +226,7 @@ class _TVSearchPageState extends State<TVSearchPage> {
                                             builder: (_) => TVDetailsPage(
                                               id: item.id ?? 0,
                                               videoType: item.videoType ?? 1,
+                                              typeId: item.typeId ?? 0,
                                             ),
                                           ),
                                         );

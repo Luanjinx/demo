@@ -9,7 +9,6 @@ import '../utils/color.dart';
 import '../widgets/tv_banner.dart';
 import '../widgets/tv_section_row.dart';
 import '../widgets/tv_sidebar.dart';
-import '../widgets/tv_focusable.dart';
 import 'tv_details_page.dart';
 import 'tv_login_page.dart';
 import 'tv_search_page.dart';
@@ -22,68 +21,50 @@ class TVHomePage extends StatefulWidget {
 }
 
 class _TVHomePageState extends State<TVHomePage> {
-  TVNavDestination _currentNav = TVNavDestination.home;
+  String _currentNavKey = 'home';
   final ScrollController _scrollController = ScrollController();
 
-  void _onNavSelect(TVNavDestination destination) {
-    final homeProvider = Provider.of<TVHomeProvider>(context, listen: false);
-
-    setState(() {
-      _currentNav = destination;
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final homeProvider = Provider.of<TVHomeProvider>(context, listen: false);
+      if (homeProvider.types.isEmpty && !homeProvider.loadingTypes) {
+        homeProvider.initHome();
+      }
     });
-
-    switch (destination) {
-      case TVNavDestination.search:
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const TVSearchPage()),
-        ).then((_) {
-          setState(() {
-            _currentNav = TVNavDestination.home;
-          });
-        });
-        break;
-
-      case TVNavDestination.login:
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const TVLoginPage()),
-        ).then((_) {
-          setState(() {
-            _currentNav = TVNavDestination.home;
-          });
-        });
-        break;
-
-      case TVNavDestination.home:
-        homeProvider.selectTab(0, "Beranda");
-        _scrollToTop();
-        break;
-
-      case TVNavDestination.movies:
-        _filterByType("Movie", "Film");
-        _scrollToTop();
-        break;
-
-      case TVNavDestination.series:
-        _filterByType("Show", "Serial / Drama");
-        _scrollToTop();
-        break;
-
-      case TVNavDestination.anime:
-        _filterByType("Anime", "Anime");
-        _scrollToTop();
-        break;
-    }
   }
 
-  void _filterByType(String keyword, String fallbackName) {
+  void _onNavSelect(String navKey, {int? typeId, String? typeName}) {
     final homeProvider = Provider.of<TVHomeProvider>(context, listen: false);
-    final match = homeProvider.types.firstWhere(
-      (t) => (t.name ?? '').toLowerCase().contains(keyword.toLowerCase()),
-      orElse: () => homeProvider.types.isNotEmpty ? homeProvider.types.first : homeProvider.types.first,
-    );
-    homeProvider.selectTab(match.id ?? 0, match.name ?? fallbackName);
+
+    if (navKey == 'search') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const TVSearchPage()),
+      );
+      return;
+    }
+
+    if (navKey == 'login') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const TVLoginPage()),
+      );
+      return;
+    }
+
+    setState(() {
+      _currentNavKey = navKey;
+    });
+
+    if (navKey == 'home') {
+      homeProvider.selectTab(0, "Beranda");
+      _scrollToTop();
+    } else if (typeId != null) {
+      homeProvider.selectTab(typeId, typeName ?? "");
+      _scrollToTop();
+    }
   }
 
   void _scrollToTop() {
@@ -96,13 +77,25 @@ class _TVHomePageState extends State<TVHomePage> {
     }
   }
 
-  void _openDetails(ContentItem item) {
+  void _openDetails(ContentItem item, [SectionItem? section]) {
+    final effectiveVideoType = (item.videoType != null && item.videoType != 0)
+        ? item.videoType!
+        : ((section?.videoType != null && section!.videoType != 0) ? section.videoType! : 1);
+    final effectiveTypeId = (item.typeId != null && item.typeId != 0)
+        ? item.typeId!
+        : ((section?.typeId != null && section!.typeId != 0) ? section.typeId! : 0);
+    final effectiveSubVideoType = (item.subVideoType != null && item.subVideoType != 0)
+        ? item.subVideoType!
+        : (section?.subVideoType ?? 0);
+
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => TVDetailsPage(
           id: item.id ?? 0,
-          videoType: item.videoType ?? 1,
+          videoType: effectiveVideoType,
+          typeId: effectiveTypeId,
+          subVideoType: effectiveSubVideoType,
         ),
       ),
     );
@@ -115,13 +108,26 @@ class _TVHomePageState extends State<TVHomePage> {
         builder: (_) => TVDetailsPage(
           id: item.id ?? 0,
           videoType: item.videoType ?? 1,
+          typeId: item.typeId ?? 0,
+          subVideoType: item.subVideoType ?? 0,
         ),
       ),
     );
   }
 
   void _playBanner(BannerItem item) {
-    _openBannerDetails(item);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => TVDetailsPage(
+          id: item.id ?? 0,
+          videoType: item.videoType ?? 1,
+          typeId: item.typeId ?? 0,
+          subVideoType: item.subVideoType ?? 0,
+          autoPlay: true,
+        ),
+      ),
+    );
   }
 
   @override
@@ -140,7 +146,7 @@ class _TVHomePageState extends State<TVHomePage> {
         children: [
           // 1. Android TV Sidebar Navigation
           TVSidebar(
-            currentNav: _currentNav,
+            currentNavKey: _currentNavKey,
             onSelect: _onNavSelect,
           ),
 
@@ -161,14 +167,22 @@ class _TVHomePageState extends State<TVHomePage> {
                       onPlayTap: _playBanner,
                       onDetailTap: _openBannerDetails,
                     )
+                  else if (homeProvider.selectedTypeId != 0)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 28, top: 32, bottom: 8),
+                      child: Text(
+                        homeProvider.selectedTypeName,
+                        style: GoogleFonts.outfit(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                        ),
+                      ),
+                    )
                   else
                     const SizedBox(height: 24),
 
-                  // Horizontal Category Pills (Quick Switcher on top of sections)
-                  if (homeProvider.types.isNotEmpty)
-                    _buildCategoryPills(homeProvider),
-
-                  // Horizontal Section Rows (Trending, Movies, Drama, Anime)
+                  // Horizontal Section Rows (Top 10, Recommendations, etc.)
                   if (homeProvider.loadingSections)
                     _buildSectionsShimmer()
                   else if (homeProvider.sections.isNotEmpty)
@@ -187,50 +201,6 @@ class _TVHomePageState extends State<TVHomePage> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildCategoryPills(TVHomeProvider provider) {
-    return Container(
-      height: 38,
-      margin: const EdgeInsets.only(left: 24, right: 24, bottom: 8),
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: provider.types.length + 1, // +1 for "Semua / Beranda"
-        separatorBuilder: (_, __) => const SizedBox(width: 10),
-        itemBuilder: (context, index) {
-          final isHome = index == 0;
-          final int typeId = isHome ? 0 : (provider.types[index - 1].id ?? 0);
-          final String name = isHome ? "Semua" : (provider.types[index - 1].name ?? '');
-          final bool isSelected = provider.selectedTypeId == typeId;
-
-          return TVFocusable(
-            onPressed: () {
-              provider.selectTab(typeId, name);
-            },
-            borderRadius: BorderRadius.circular(20),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-              decoration: BoxDecoration(
-                color: isSelected ? TVColors.primary : Colors.white.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: isSelected ? TVColors.primary : Colors.white.withValues(alpha: 0.15),
-                  width: 1,
-                ),
-              ),
-              child: Text(
-                name,
-                style: GoogleFonts.outfit(
-                  fontSize: 13,
-                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          );
-        },
       ),
     );
   }
