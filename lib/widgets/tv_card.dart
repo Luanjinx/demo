@@ -91,7 +91,6 @@ class TVCard extends StatelessWidget {
                   style: GoogleFonts.blackOpsOne(
                     fontSize: _isPortrait ? 85 : 95,
                     fontWeight: FontWeight.w900,
-                    color: Colors.transparent,
                     shadows: [
                       Shadow(
                         color: Colors.black.withValues(alpha: 0.9),

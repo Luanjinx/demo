@@ -143,19 +143,16 @@ class _TVSidebarState extends State<TVSidebar> {
                       icon: Icons.auto_awesome_rounded,
                       label: "Anime",
                     ),
+                    const SizedBox(height: 10),
+                    _buildNavItem(
+                      destination: TVNavDestination.login,
+                      icon: auth.isLoggedIn ? Icons.account_circle_rounded : Icons.login_rounded,
+                      label: auth.isLoggedIn ? (auth.currentUser?.name ?? "Profil") : "Aktivasi TV",
+                      isSpecial: !auth.isLoggedIn,
+                    ),
+                    const SizedBox(height: 10),
                   ],
                 ),
-              ),
-            ),
-
-            // Bottom Profile / Login
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
-              child: _buildNavItem(
-                destination: TVNavDestination.login,
-                icon: auth.isLoggedIn ? Icons.account_circle_rounded : Icons.login_rounded,
-                label: auth.isLoggedIn ? (auth.currentUser?.name ?? "Profil") : "Aktivasi TV",
-                isSpecial: !auth.isLoggedIn,
               ),
             ),
           ],

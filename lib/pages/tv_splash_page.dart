@@ -33,7 +33,9 @@ class _TVSplashPageState extends State<TVSplashPage> with SingleTickerProviderSt
     );
 
     _animController.forward();
-    _initAndNavigate();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _initAndNavigate();
+    });
   }
 
   Future<void> _initAndNavigate() async {
