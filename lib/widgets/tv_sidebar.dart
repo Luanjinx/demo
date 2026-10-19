@@ -73,7 +73,7 @@ class _TVSidebarState extends State<TVSidebar> {
         ),
         child: Column(
           children: [
-            const SizedBox(height: 28),
+            const SizedBox(height: 16),
 
             // Logo
             Padding(
@@ -81,14 +81,14 @@ class _TVSidebarState extends State<TVSidebar> {
               child: Row(
                 children: [
                   Container(
-                    width: 38,
-                    height: 38,
+                    width: 36,
+                    height: 36,
                     decoration: BoxDecoration(
                       color: TVColors.primary,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Center(
-                      child: Icon(Icons.play_arrow_rounded, color: Colors.white, size: 26),
+                      child: Icon(Icons.play_arrow_rounded, color: Colors.white, size: 24),
                     ),
                   ),
                   if (_isExpanded) ...[
@@ -110,12 +110,12 @@ class _TVSidebarState extends State<TVSidebar> {
                 ],
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 14),
 
             // Navigation Items
             Expanded(
               child: SingleChildScrollView(
-                physics: const NeverScrollableScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
                 child: Column(
                   children: [
                     _buildNavItem(
@@ -150,7 +150,7 @@ class _TVSidebarState extends State<TVSidebar> {
 
             // Bottom Profile / Login
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
+              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
               child: _buildNavItem(
                 destination: TVNavDestination.login,
                 icon: auth.isLoggedIn ? Icons.account_circle_rounded : Icons.login_rounded,
@@ -173,7 +173,7 @@ class _TVSidebarState extends State<TVSidebar> {
     final bool isSelected = widget.currentNav == destination;
 
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+      margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 6),
       child: TVFocusable(
         scaleFactor: 1.04,
         borderRadius: BorderRadius.circular(8),
@@ -183,7 +183,7 @@ class _TVSidebarState extends State<TVSidebar> {
           widget.onSelect(destination);
         },
         child: Container(
-          height: 44,
+          height: 38,
           padding: const EdgeInsets.symmetric(horizontal: 10),
           decoration: BoxDecoration(
             color: isSelected

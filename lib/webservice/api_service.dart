@@ -21,9 +21,8 @@ class TVApiService {
         connectTimeout: const Duration(seconds: 15),
         receiveTimeout: const Duration(seconds: 15),
         headers: {
-          'apikey': Constant.apiToken,
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
+          'Api-Token': Constant.apiToken, // Required by Laravel middleware ApiAuthToken
         },
       ),
     );
@@ -31,8 +30,8 @@ class TVApiService {
     if (kDebugMode) {
       _dio.interceptors.add(
         LogInterceptor(
-          requestBody: false,
-          responseBody: false,
+          requestBody: true,
+          responseBody: true,
           logPrint: (obj) => debugPrint("[TV API] $obj"),
         ),
       );
@@ -42,7 +41,13 @@ class TVApiService {
   // 1. Fetch Types (Movies, Series, Anime, etc.)
   Future<TypeListModel> getTypes() async {
     try {
-      final response = await _dio.post('get_type');
+      final response = await _dio.post(
+        'get_type',
+        data: {
+          'user_id': Constant.userId ?? 0,
+          'device_id': Constant.deviceId,
+        },
+      );
       if (response.statusCode == 200) {
         final data = response.data is String ? jsonDecode(response.data) : response.data;
         return TypeListModel.fromJson(data);
@@ -53,14 +58,17 @@ class TVApiService {
     return TypeListModel(status: 400, result: []);
   }
 
-  // 2. Fetch Featured Banner
+  // 2. Fetch Featured Banner ('get_banner')
   Future<BannerListModel> getBanners({int isHomeScreen = 1, int typeId = 0}) async {
     try {
       final response = await _dio.post(
-        'get_banner_list',
+        'get_banner',
         data: {
-          'is_home_screen': isHomeScreen,
+          'user_id': Constant.userId ?? 0,
           'type_id': typeId,
+          'is_home_screen': isHomeScreen,
+          'device_id': Constant.deviceId,
+          'is_kids_profile': 0,
         },
       );
       if (response.statusCode == 200) {
@@ -73,7 +81,7 @@ class TVApiService {
     return BannerListModel(status: 400, result: []);
   }
 
-  // 3. Fetch Horizontal Sections (Trending, Movies, Drama, Anime)
+  // 3. Fetch Horizontal Sections ('section_list')
   Future<SectionListModel> getSections({
     int isHomeScreen = 1,
     int typeId = 0,
@@ -83,10 +91,11 @@ class TVApiService {
       final response = await _dio.post(
         'section_list',
         data: {
-          'is_home_screen': isHomeScreen,
-          'type_id': typeId,
           'user_id': Constant.userId ?? 0,
+          'type_id': typeId,
+          'is_home_screen': isHomeScreen,
           'device_id': Constant.deviceId,
+          'is_kids_profile': 0,
           'page_no': pageNo,
         },
       );
@@ -100,19 +109,19 @@ class TVApiService {
     return SectionListModel(status: 400, result: []);
   }
 
-  // 4. Fetch Details (Movie or TV Show)
+  // 4. Fetch Details ('content_detail')
   Future<ContentDetailModel> getContentDetail({
     required int id,
     required int videoType,
+    int typeId = 0,
   }) async {
     try {
-      final String endpoint = (videoType == Constant.videoTypeMovie) ? 'video_details' : 'show_details';
-      final String paramKey = (videoType == Constant.videoTypeMovie) ? 'video_id' : 'show_id';
-
       final response = await _dio.post(
-        endpoint,
+        'content_detail',
         data: {
-          paramKey: id,
+          'type_id': typeId,
+          'video_type': videoType,
+          'video_id': id,
           'user_id': Constant.userId ?? 0,
         },
       );
@@ -126,17 +135,17 @@ class TVApiService {
     return ContentDetailModel(status: 400, result: null);
   }
 
-  // 5. Fetch Episodes by Season
+  // 5. Fetch Episodes by Season ('get_video_by_season_id')
   Future<List<EpisodeItem>> getEpisodesBySeason({
     required int showId,
     required int seasonId,
   }) async {
     try {
       final response = await _dio.post(
-        'episode_by_season',
+        'get_video_by_season_id',
         data: {
           'show_id': showId,
-          'session_id': seasonId,
+          'season_id': seasonId,
           'user_id': Constant.userId ?? 0,
         },
       );
@@ -152,11 +161,11 @@ class TVApiService {
     return [];
   }
 
-  // 6. Search Content
+  // 6. Search Content ('search_content')
   Future<List<ContentItem>> search({required String query}) async {
     try {
       final response = await _dio.post(
-        'search_video',
+        'search_content',
         data: {
           'title': query,
           'user_id': Constant.userId ?? 0,
@@ -174,10 +183,10 @@ class TVApiService {
     return [];
   }
 
-  // 7. TV Activation Login (Generate Code)
+  // 7. TV Activation Login (Generate Code: 'get_tv_login_code')
   Future<TVLoginCodeModel> getTvLoginCode() async {
     try {
-      final response = await _dio.post('get_tv_login_code');
+      final response = await _dio.post('get_tv_login_code', data: {});
       if (response.statusCode == 200) {
         final data = response.data is String ? jsonDecode(response.data) : response.data;
         return TVLoginCodeModel.fromJson(data);
@@ -188,7 +197,7 @@ class TVApiService {
     return TVLoginCodeModel(status: 400, result: []);
   }
 
-  // 8. TV Activation Login (Poll Status)
+  // 8. TV Activation Login (Poll Status: 'check_tv_login')
   Future<TVUserData?> checkTvLogin({required String uniqueCode}) async {
     try {
       final response = await _dio.post(

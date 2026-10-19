@@ -135,146 +135,152 @@ class _TVLoginPageState extends State<TVLoginPage> {
     final code = auth.tvCode ?? "----";
     final characters = code.padRight(4, '-').split('');
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        // Left Column: Instructions and 4-Digit Boxes
-        Expanded(
-          flex: 6,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "Aktivasi Akun di Smart TV",
-                style: GoogleFonts.outfit(
-                  fontSize: 30,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                "Masuk ke akun Nexstream Anda dengan mudah tanpa mengetik kata sandi di TV.",
-                style: GoogleFonts.outfit(
-                  fontSize: 14,
-                  color: TVColors.textSecondary,
-                ),
-              ),
-              const SizedBox(height: 32),
-
-              // Steps
-              _buildStep("1", "Buka aplikasi Nexstream di Smartphone Anda"),
-              const SizedBox(height: 12),
-              _buildStep("2", "Buka menu Profil lalu pilih 'Aktifkan TV'"),
-              const SizedBox(height: 12),
-              _buildStep("3", "Masukkan 4 digit kode di bawah ini:"),
-              const SizedBox(height: 24),
-
-              // Code Boxes
-              Row(
-                children: characters.map((char) {
-                  return Container(
-                    width: 58,
-                    height: 64,
-                    margin: const EdgeInsets.only(right: 14),
-                    decoration: BoxDecoration(
-                      color: TVColors.cardBg,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: TVColors.primary.withValues(alpha: 0.60),
-                        width: 2.0,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: TVColors.primary.withValues(alpha: 0.25),
-                          blurRadius: 12,
-                        ),
-                      ],
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      char,
-                      style: GoogleFonts.outfit(
-                        fontSize: 32,
-                        fontWeight: FontWeight.w900,
-                        color: Colors.white,
-                        letterSpacing: 2,
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 28),
-
-              // Status / Refresh Button
-              Row(
+    return Center(
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Left Column: Instructions and 4-Digit Boxes
+            Expanded(
+              flex: 6,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: TVColors.accent,
+                  Text(
+                    "Aktivasi Akun di Smart TV",
+                    style: GoogleFonts.outfit(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
                     ),
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(height: 6),
                   Text(
-                    "Menunggu konfirmasi dari smartphone...",
+                    "Masuk ke akun Nexstream Anda dengan mudah tanpa mengetik kata sandi di TV.",
                     style: GoogleFonts.outfit(
                       fontSize: 13,
-                      color: TVColors.accent,
-                      fontStyle: FontStyle.italic,
+                      color: TVColors.textSecondary,
                     ),
                   ),
-                  const SizedBox(width: 20),
-                  TVFocusable(
-                    onPressed: () => auth.requestTVCode(),
-                    borderRadius: BorderRadius.circular(6),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.10),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        "Muat Ulang Kode",
-                        style: GoogleFonts.outfit(fontSize: 12, color: Colors.white70),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
+                  const SizedBox(height: 18),
 
-        // Right Column: QR Code
-        Expanded(
-          flex: 4,
-          child: Center(
-            child: Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.white.withValues(alpha: 0.15),
-                    blurRadius: 24,
+                  // Steps
+                  _buildStep("1", "Buka aplikasi Nexstream di Smartphone Anda"),
+                  const SizedBox(height: 8),
+                  _buildStep("2", "Buka menu Profil lalu pilih 'Aktifkan TV'"),
+                  const SizedBox(height: 8),
+                  _buildStep("3", "Masukkan 4 digit kode di bawah ini:"),
+                  const SizedBox(height: 16),
+
+                  // Code Boxes
+                  Row(
+                    children: characters.map((char) {
+                      return Container(
+                        width: 48,
+                        height: 52,
+                        margin: const EdgeInsets.only(right: 12),
+                        decoration: BoxDecoration(
+                          color: TVColors.cardBg,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: TVColors.primary.withValues(alpha: 0.60),
+                            width: 1.8,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: TVColors.primary.withValues(alpha: 0.25),
+                              blurRadius: 10,
+                            ),
+                          ],
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          char,
+                          style: GoogleFonts.outfit(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.white,
+                            letterSpacing: 2,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Status / Refresh Button
+                  Row(
+                    children: [
+                      const SizedBox(
+                        width: 14,
+                        height: 14,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: TVColors.accent,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        "Menunggu konfirmasi dari smartphone...",
+                        style: GoogleFonts.outfit(
+                          fontSize: 12,
+                          color: TVColors.accent,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      TVFocusable(
+                        onPressed: () => auth.requestTVCode(),
+                        borderRadius: BorderRadius.circular(6),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.10),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            "Muat Ulang Kode",
+                            style: GoogleFonts.outfit(fontSize: 11, color: Colors.white70),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
-              ),
-              child: QrImageView(
-                data: code.isNotEmpty ? "nexstream://tv_login?code=$code" : "nexstream://tv_login",
-                version: QrVersions.auto,
-                size: 200.0,
-                backgroundColor: Colors.white,
               ),
             ),
-          ),
+
+            // Right Column: QR Code
+            Expanded(
+              flex: 4,
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(14),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.white.withValues(alpha: 0.15),
+                        blurRadius: 20,
+                      ),
+                    ],
+                  ),
+                  child: QrImageView(
+                    data: code.isNotEmpty && code != "----" ? "nexstream://tv_login?code=$code" : "nexstream://tv_login",
+                    version: QrVersions.auto,
+                    size: 155.0,
+                    backgroundColor: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
