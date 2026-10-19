@@ -1,5 +1,6 @@
 class Constant {
   static const String appName = "Nexstream TV";
+  static const String appPackageName = "com.nexstream.prjkt";
   static const String appVersion = "1.0.0";
 
   // Backend API Configuration (Connecting to same Laravel backend)
